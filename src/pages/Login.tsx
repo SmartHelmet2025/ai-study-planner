@@ -37,7 +37,7 @@ const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'http://localhost:5173/auth/callback'
+        redirectTo: 'https://ai-study-planner-gilt.vercel.app/auth/callback'
       }
     });
     
