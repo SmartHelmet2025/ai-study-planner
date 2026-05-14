@@ -32,20 +32,22 @@ export default function Login() {
   };
 
   // 🔵 GOOGLE LOGIN
-  const handleGoogleLogin = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: window.location.origin + "/dashboard",
-        },
-      });
-
-      if (error) throw error;
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
+const signInWithGoogle = async () => {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        skipBrowserRedirect: false
+      }
+    });
+    
+    if (error) throw error;
+  } catch (error) {
+    console.error("Google sign in error:", error);
+    alert("Failed to sign in with Google");
+  }
+};
 
   // 🔁 FORGOT PASSWORD
   const handleForgotPassword = async () => {
@@ -157,7 +159,7 @@ export default function Login() {
 
           {/* GOOGLE LOGIN */}
           <button
-            onClick={handleGoogleLogin}
+            onClick={signInWithGoogle}
             className="w-full border py-4 rounded-xl hover:bg-gray-50 transition mb-4"
           >
             Login with Google
