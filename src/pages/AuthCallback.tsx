@@ -6,20 +6,20 @@ export default function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         navigate('/dashboard');
-      } else if (event === 'SIGNED_OUT') {
-        navigate('/');
       }
     });
 
-    // Also check for existing session
+    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate('/dashboard');
       }
     });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   return (
