@@ -3,7 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AddTask from "./pages/AddTask";
-import AuthCallback from "./pages/AuthCallback"; // ✅ ADD THIS
+import AuthCallback from "./pages/AuthCallback";
 
 export default function App() {
   return (
@@ -13,8 +13,6 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/add" element={<AddTask />} />
-
-        {/* ✅ IMPORTANT FOR GOOGLE LOGIN */}
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </BrowserRouter>

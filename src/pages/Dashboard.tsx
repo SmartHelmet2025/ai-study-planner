@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { LayoutDashboard, CheckSquare, Plus, Brain, Calendar, User, Settings, LogOut, ListChecks } from 'lucide-react';
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -141,45 +142,57 @@ const [backupFrequency, setBackupFrequency] = useState("weekly");
   };
 
 
-  // ➕ Add Task handler
-  const handleAddTask = async () => {
-    if (!title.trim()) {
-      alert("Please enter a task title");
-      return;
-    }
+ const handleAddTask = async () => {
+  console.log("Button clicked!");
+  console.log("Title:", title);
+  console.log("Subject:", subject);
+  
+  if (!title.trim()) {
+    alert("Please enter a task title");
+    return;
+  }
 
-    setAddingTask(true);
-    const { data: userData } = await supabase.auth.getSession();
-    const userId = userData.session?.user.id;
-
-    const { error } = await supabase.from("tasks").insert([
-      {
-        title: title.trim(),
-        subject: subject.trim() || "General",
-        deadline: deadline || null,
-        priority: priority,
-        estimated_hours: studyHours,
-        status: "Pending",
-        user_id: userId,
-      },
-    ]);
-
-    if (error) {
-      console.error("Error adding task:", error);
-      alert("Failed to add task. Please try again.");
-    } else {
-      alert("Task added successfully!");
-      setSubject("");
-      setTitle("");
-      setDeadline("");
-      setPriority("Medium");
-      setStudyHours(1);
-      await fetchTasks();
-      setActiveMenu("dashboard");
-    }
+  setAddingTask(true);
+  const { data: userData } = await supabase.auth.getSession();
+  console.log("User data:", userData);
+  
+  const userId = userData.session?.user.id;
+  console.log("User ID:", userId);
+  
+  if (!userId) {
+    alert("You must be logged in to add a task");
     setAddingTask(false);
-  };
+    return;
+  }
 
+  const taskData = {
+    title: title.trim(),
+    subject: subject.trim() || "General",
+    deadline: deadline || null,
+    priority: priority,
+    estimated_hours: studyHours,
+    status: "Pending",
+    user_id: userId,
+  };
+  console.log("Task data being sent:", taskData);
+
+  const { error } = await supabase.from("tasks").insert([taskData]);
+
+  if (error) {
+    console.error("Error adding task:", error);
+    alert("Failed to add task: " + error.message);
+  } else {
+    alert("Task added successfully!");
+    setSubject("");
+    setTitle("");
+    setDeadline("");
+    setPriority("Medium");
+    setStudyHours(1);
+    await fetchTasks();
+    setActiveMenu("dashboard");
+  }
+  setAddingTask(false);
+};
   // Cancel add task
   const handleCancelAdd = () => {
     setSubject("");
@@ -575,75 +588,52 @@ useEffect(() => {
           <h2>StudyPlanner AI</h2>
         </div>
 
-        <nav className="sidebar-nav">
-          <button
-            className={`nav-item ${activeMenu === "dashboard" ? "active" : ""}`}
-            onClick={() => setActiveMenu("dashboard")}
-          >
-            <span className="nav-icon">📊</span>
-            <span>Dashboard</span>
-          </button>
-          <button
-            className={`nav-item ${activeMenu === "tasks" ? "active" : ""}`}
-            onClick={() => setActiveMenu("tasks")}
-          >
-            <span className="nav-icon">✅</span>
-            <span>My Tasks</span>
-          </button>
-          <button
-            className={`nav-item ${activeMenu === "completed" ? "active" : ""}`}
-            onClick={() => setActiveMenu("completed")}
-          >
-            <span className="nav-icon">✔️</span>
-            <span>Completed</span>
-          </button>
-          <button
-            className={`nav-item ${activeMenu === "addtask" ? "active" : ""}`}
-            onClick={() => setActiveMenu("addtask")}
-          >
-            <span className="nav-icon">➕</span>
-            <span>Add Task</span>
-          </button>
-          <button
-            className={`nav-item ${activeMenu === "ai" ? "active" : ""}`}
-            onClick={() => setActiveMenu("ai")}
-          >
-            <span className="nav-icon">🤖</span>
-            <span>AI Planner</span>
-          </button>
-          <button
-            className={`nav-item ${activeMenu === "calendar" ? "active" : ""}`}
-            onClick={() => setActiveMenu("calendar")}
-          >
-            <span className="nav-icon">📅</span>
-            <span>Calendar</span>
-          </button>
-          <button
-            className={`nav-item ${activeMenu === "profile" ? "active" : ""}`}
-            onClick={() => setActiveMenu("profile")}
-          >
-            <span className="nav-icon">👤</span>
-            <span>Profile</span>
-          </button>
-          <button
-            className={`nav-item ${activeMenu === "settings" ? "active" : ""}`}
-            onClick={() => setActiveMenu("settings")}
-          >
-            <span className="nav-icon">⚙️</span>
-            <span>Settings</span>
-          </button>
-        </nav>
+<nav className="sidebar-nav">
+  <button className={`nav-item ${activeMenu === "dashboard" ? "active" : ""}`} onClick={() => setActiveMenu("dashboard")}>
+    <span className="nav-icon"><LayoutDashboard size={20} /></span>
+    <span>Dashboard</span>
+  </button>
+  
+  <button className={`nav-item ${activeMenu === "tasks" ? "active" : ""}`} onClick={() => setActiveMenu("tasks")}>
+    <span className="nav-icon"><ListChecks size={20} /></span>
+    <span>My Tasks</span>
+  </button>
+  
+  <button className={`nav-item ${activeMenu === "completed" ? "active" : ""}`} onClick={() => setActiveMenu("completed")}>
+    <span className="nav-icon"><CheckSquare size={20} /></span>
+    <span>Completed</span>
+  </button>
+  
+  <Link to="/add" className="nav-item">
+    <span className="nav-icon"><Plus size={20} /></span>
+    <span>Add Task</span>
+  </Link>
+  
+  <button className={`nav-item ${activeMenu === "ai" ? "active" : ""}`} onClick={() => setActiveMenu("ai")}>
+    <span className="nav-icon"><Brain size={20} /></span>
+    <span>AI Planner</span>
+  </button>
+  
+  <button className={`nav-item ${activeMenu === "calendar" ? "active" : ""}`} onClick={() => setActiveMenu("calendar")}>
+    <span className="nav-icon"><Calendar size={20} /></span>
+    <span>Calendar</span>
+  </button>
+  
+  <button className={`nav-item ${activeMenu === "profile" ? "active" : ""}`} onClick={() => setActiveMenu("profile")}>
+    <span className="nav-icon"><User size={20} /></span>
+    <span>Profile</span>
+  </button>
+  
+  <button className={`nav-item ${activeMenu === "settings" ? "active" : ""}`} onClick={() => setActiveMenu("settings")}>
+    <span className="nav-icon"><Settings size={20} /></span>
+    <span>Settings</span>
+  </button>
+</nav>
 
-        <button
-          onClick={async () => {
-            await supabase.auth.signOut();
-            navigate("/");
-          }}
-          className="logout-btn"
-        >
-          <span className="nav-icon">🚪</span>
-          <span>Logout</span>
-        </button>
+<button onClick={async () => { await supabase.auth.signOut(); navigate("/"); }} className="logout-btn">
+  <span className="nav-icon"><LogOut size={20} /></span>
+  <span>Logout</span>
+</button>
       </aside>
 
       {/* ========================= */}
