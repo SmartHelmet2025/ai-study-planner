@@ -2,7 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   GLOBAL RESET
+========================= */
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
+
 body {
-  background: #0f172a;
-  color: white;
+  background: #f9fafb; /* clean modern light gray */
+  color: #111827; /* dark text for readability */
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+/* =========================
+   OPTIONAL SCROLL CLEANUP
+========================= */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }
